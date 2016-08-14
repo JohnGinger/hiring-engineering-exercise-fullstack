@@ -6,14 +6,13 @@ const supertest = require("supertest");
 const { expect } = require("chai");
 const db = require("../db");
 
-// TODO: make sure this imports your HTTP server as per the supertest docs
 const server = require("../server");
 
 describe("HTTP Server", () => {
     let app, request;
     let sensorId, dataArray;
 
-    before(() => app = server());
+    before(() => app = server())
     before(() => request = supertest(app));
     beforeEach(db.clean);
 
