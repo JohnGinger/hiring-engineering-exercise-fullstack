@@ -19,9 +19,6 @@ module.exports.get = function(searchParameters){
     
     let query = db('data').where("sensorId", searchParameters.sensorId)
 
-    // In the readme it says that you should use an int - but the code implied strongly 
-    // and ISO string so I assumed you meant an iso string.
-
     if (searchParameters.hasSince){
         query = query.andWhere("time", ">", searchParameters.since.toISOString())
     }
@@ -38,6 +35,6 @@ module.exports.insert = function(datum){
     return db('data').insert({
         sensorId : datum.sensorId,
         time : datum.time,
-        value : datum.value
+        value : datum.value,
     })
 }

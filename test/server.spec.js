@@ -124,8 +124,20 @@ describe("HTTP Server", () => {
             .end(done);
         });
 
+        it("400s if packet time is not a unix timestamp", (done) => {
+            request.put(URL).send({ sensorId: "1", time: "2016-01-01T06:00:00Z", value : 10 })
+            .expect(400)
+            .end(done);
+        });
+
         it("400s if packet does not contain value", (done) => {
             request.put(URL).send({ sensorId: "1", time: 1451649600 })
+            .expect(400)
+            .end(done);
+        });
+
+        it("400s if packet value is not a float", (done) => {
+            request.put(URL).send({ sensorId: "1", time: 1451649600, value : 'a really big value' })
             .expect(400)
             .end(done);
         });
