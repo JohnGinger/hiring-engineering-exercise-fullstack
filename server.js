@@ -1,31 +1,18 @@
 "use strict";
 
 const express = require('express');
-const moment = require('moment');
 const bodyParser = require('body-parser');
 const app = express();
-
-const validDateRangeOrNoDate = function (since, until) {
-  let dateRangeSpecified = since || until;
-  if (!dateRangeSpecified) {
-    return true;
-  } else {
-    let sinceDate = moment(since, moment.ISO_8601, true);
-    let untilDate = moment(until, moment.ISO_8601, true);
-    return (!since || sinceDate.isValid()) &&
-      (!until || untilDate.isValid()) &&
-      (!(since && until) || untilDate > sinceDate);
-  }
-}
-
-const isWellFormedGetRequest = function (req) {
-  return req.query.sensorId &&
-    validDateRangeOrNoDate(req.query.since, req.query.until);
-}
+const searchParameters = require('./searchParameters');
 
 app.get('/data', function (req, res) {
-  if (isWellFormedGetRequest(req)) {
-    res.send('OK')
+  let search = searchParameters(req.query.sensorId, 
+    req.query.since,
+    req.query.until
+  )
+
+  if (search.isValid) {
+    res.send(search)
   } else {
     res.status(400).send();
   }
