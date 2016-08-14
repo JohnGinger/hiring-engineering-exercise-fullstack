@@ -3,30 +3,48 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const searchParameters = require('./searchParameters');
+const SearchParametersModel= require('./models/searchParameters');
+const DatumModel = require('./models/datum');
+const db = require('./db');
 
 app.get('/data', function (req, res) {
-  let search = searchParameters(req.query.sensorId, 
+  let search = SearchParametersModel(req.query.sensorId, 
     req.query.since,
     req.query.until
   )
 
   if (search.isValid) {
-    res.send(search)
+    db.get(search).then(data => {
+      if (data.length === 0){
+        res.status(404).send()
+      } else {
+        res.send(data)
+      }
+    }).catch(error => {
+      console.log(error)
+      res.status(500).send()
+    }
+    )
   } else {
     res.status(400).send();
   }
 });
 
-const isWellFormedPutRequest = function (req) {
-  let body = req.body;
-  return body.time && body.value && body.sensorId
-}
-
 app.put('/data', bodyParser.json(), function (req, res) {
-  if (isWellFormedPutRequest(req)) {
-    let body = req.body;
-    res.status(204).send();
+  let datum = DatumModel(req.body.sensorId, req.body.time, req.body.value);
+
+  if (datum.isValid) {
+    db.insert(datum).then(data => {
+      res.status(204).send();
+    }).catch(error => {
+      if (error.code === '23505'){
+        //Unique constraint failed (see https://www.postgresql.org/docs/9.3/static/errcodes-appendix.html)
+        res.status(409).send();
+      } else {
+        console.log(error);
+        res.status(500).send();
+      }
+    })
   } else {
     res.status(400).send();
   }

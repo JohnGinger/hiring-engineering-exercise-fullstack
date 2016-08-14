@@ -33,3 +33,11 @@ module.exports.get = function(searchParameters){
     return query.select()
 
 }
+
+module.exports.insert = function(datum){
+    return db('data').insert({
+        sensorId : datum.sensorId,
+        time : datum.time,
+        value : datum.value
+    })
+}
