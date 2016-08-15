@@ -28,7 +28,6 @@ module.exports.get = function(searchParameters){
     }
     
     return query.select()
-
 }
 
 module.exports.insert = function(datum){

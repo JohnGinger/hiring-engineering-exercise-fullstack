@@ -16,7 +16,6 @@ const validValue = function (value) {
         !isNaN(parseFloat(value))
 }
 
-
 const validate = function (parameters) {
     return validSensorId(parameters.sensorId) &&
         validTime(parameters.time) &&

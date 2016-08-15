@@ -12,7 +12,7 @@ describe("HTTP Server", () => {
     let app, request;
     let sensorId, dataArray;
 
-    before(() => app = server())
+    before(() => app = server());
     before(() => request = supertest(app));
     beforeEach(db.clean);
 
@@ -108,6 +108,21 @@ describe("HTTP Server", () => {
                 .end(done);
             });
         });
+
+        it("returns data in a range if specified", (done) => {
+            db("data").insert(dataArray).then(() => {
+                const u = `${URL}?sensorId=${sensorId}&since=${dataArray[1].time}&until=${dataArray[3].time}`;
+                request.get(u)
+                .expect(200)
+                .expect(({ body }) => {
+                    expect(body).to.be.an("array");
+                    expect(body).to.have.length(1);
+                    expect(body).to.deep.equal(dataArray.slice(2, 3));
+                })
+                .end(done);
+            });
+        });
+
     });
 
     describe("PUT /data", () => {
