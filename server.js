@@ -8,7 +8,7 @@ const DatumModel = require('./models/datum');
 const db = require('./db');
 
 app.get('/data', function (req, res) {
-  let search = SearchParametersModel(req.query.sensorId,
+  const search = SearchParametersModel(req.query.sensorId,
     req.query.since,
     req.query.until
   )
@@ -31,7 +31,7 @@ app.get('/data', function (req, res) {
 });
 
 app.put('/data', bodyParser.json(), function (req, res) {
-  let datum = DatumModel(req.body.sensorId, req.body.time, req.body.value);
+  const datum = DatumModel(req.body.sensorId, req.body.time, req.body.value);
 
   if (datum.isValid) {
     db.insert(datum).then(() => {
